@@ -84,7 +84,7 @@ def main():
                 # Delete message from queue if successfully processed
                 sqs_client.delete_message(
                     QueueUrl=SQS_QUEUE_URL,
-                    ReceiptHandle=message['ReceiptHandle']
+                    ReceiptHandle=messages['ReceiptHandle']
                 )
                     
         except Exception as e:

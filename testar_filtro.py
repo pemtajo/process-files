@@ -1,18 +1,17 @@
 import json
 from datetime import datetime
 
-# Filtro atual
 def process_message(body):
     """
     Simula o processamento de uma única mensagem de log
     """
     try:
-        event_type = body.get('eventType')  # Usando get() para evitar KeyError
-        severity = body.get('severity')  # Usando get() para evitar KeyError
+        event_type = body.get('eventType')  
+        severity = body.get('severity')  
 
         # Processa logs com eventType em ['data_leak', 'system_alert'] e severity em ['critical', 'high']
         if event_type in ['data_leak', 'system_alert']:
-            if severity in ['critical', 'high']:  # Só filtra severity quando eventType for relevante
+            if severity in ['critical', 'high']:  
                 filtered_data = {
                     'eventType': 'log_filtered',
                     'timestamp': datetime.utcnow().isoformat(),

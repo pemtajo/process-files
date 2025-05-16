@@ -2,7 +2,6 @@ import boto3
 from datetime import datetime
 import os
 
-# Substitua aqui com suas credenciais
 os.environ["AWS_ACCESS_KEY_ID"] = "AKIA6CWM3FEG3LWDAF53"
 os.environ["AWS_SECRET_ACCESS_KEY"] = "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"
 
@@ -13,7 +12,6 @@ cutoff_date = datetime.strptime("2025-05-15", "%Y-%m-%d")
 # Lista os arquivos
 response = s3.list_objects_v2(Bucket=bucket_name)
 
-# Filtra arquivos por data
 if "Contents" in response:
     recent_logs = [
         obj["Key"] for obj in response["Contents"]
@@ -21,7 +19,7 @@ if "Contents" in response:
     ]
     
     # Baixa os primeiros arquivos para análise
-    for key in recent_logs[:3]:  # Baixe os 3 primeiros, por exemplo
+    for key in recent_logs[:3]:
         filename = key.split("/")[-1]
         print(f"Baixando {key} como {filename}...")
         s3.download_file(bucket_name, key, filename)

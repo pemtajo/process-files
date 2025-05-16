@@ -80,7 +80,7 @@ def main():
                 continue
             
 
-            if process_message(message):
+            if process_message(messages):
                 # Delete message from queue if successfully processed
                 sqs_client.delete_message(
                     QueueUrl=SQS_QUEUE_URL,

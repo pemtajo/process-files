@@ -62,7 +62,6 @@ def main():
     Main function to poll SQS queue and process messages
     """
     print(f"Starting to poll queue: {SQS_QUEUE_URL}")
-    print(f"Filtering for field: {FILTER_FIELD}")
     print(f"Saving to bucket: {S3_BUCKET}")
     
     while True:

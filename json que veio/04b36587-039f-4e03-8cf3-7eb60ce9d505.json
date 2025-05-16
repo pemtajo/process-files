@@ -1,0 +1,11 @@
+{
+  "eventType": "error_occurred",
+  "userId": "1e13b4d9-69b6-4264-8d2f-d5ea26889f60",
+  "timestamp": "2025-05-16T18:21:24.331537",
+  "additionalData": {
+    "browser": "Edge",
+    "ip": "127.0.0.104",
+    "sessionId": "824daa06-6a01-42c6-8739-c45237b5af57",
+    "userAgent": "Mozilla/5.0 (Linux)"
+  }
+}

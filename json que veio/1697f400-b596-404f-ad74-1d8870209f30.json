@@ -1,0 +1,11 @@
+{
+  "eventType": "user_logout",
+  "userId": "d563673b-e9a7-4c92-8eae-54fc5ecfdebe",
+  "timestamp": "2025-05-16T18:21:24.331912",
+  "additionalData": {
+    "browser": "Firefox",
+    "ip": "172.16.0.239",
+    "sessionId": "a229f3df-a572-40d5-ac3d-e89f80c9269f",
+    "userAgent": "Mozilla/5.0 (Linux)"
+  }
+}

@@ -16,7 +16,7 @@ S3_BUCKET = os.getenv('S3_BUCKET', 'umfg-cloud-logs-filtered')
 sqs_client = boto3.client('sqs', region_name=AWS_REGION)
 s3_client = boto3.client('s3', region_name=AWS_REGION)
 
-SUBFOLDER = 'version-profpedro'
+SUBFOLDER = 'version-devRosa'
 
 def process_message(message):
     """
@@ -24,29 +24,32 @@ def process_message(message):
     """
     try:
         body = json.loads(message['Body'])
-        
-        if 'eventType' in body and body['eventType'] in ['error_occurred', 'file_upload']:
-            filtered_data = {
-                'eventType': 'log_filtered',
-                'timestamp': datetime.utcnow().isoformat(),
-                'original_message': body
-            }
-            
-            timestamp = datetime.utcnow().strftime('%Y/%m/%d/%H/%M')
-            s3_key = f"{SUBFOLDER}/{timestamp}/{message['MessageId']}.json"
 
-            s3_client.put_object(
-                Bucket=S3_BUCKET,
-                Key=s3_key,
-                Body=json.dumps(filtered_data, indent=2),
-                ContentType='application/json'
-            )
-            
-            print(f"Successfully processed message {message['MessageId']}")
-            return True
+        event_type = body.get('eventType')  
+        severity = body.get('severity') 
+
+        if event_type in ['data_leak', 'system_alert']:
+            if severity in ['critical', 'high']:  
+                filtered_data = {
+                    'eventType': 'log_filtered',
+                    'timestamp': datetime.utcnow().isoformat(),
+                    'original_message': body
+                }
+
+                timestamp = datetime.utcnow().strftime('%Y/%m/%d/%H/%M')
+                s3_key = f"{SUBFOLDER}/{timestamp}/{message['MessageId']}.json"
+
+                s3_client.put_object(
+                    Bucket=S3_BUCKET,
+                    Key=s3_key,
+                    Body=json.dumps(filtered_data, indent=2),
+                    ContentType='application/json'
+                )
+
+                print(f"Successfully processed message {message['MessageId']}")
+                return True
 
         return False
-            
     except json.JSONDecodeError:
         print(f"Error decoding JSON from message {message['MessageId']}")
         return False
@@ -59,7 +62,7 @@ def main():
     Main function to poll SQS queue and process messages
     """
     print(f"Starting to poll queue: {SQS_QUEUE_URL}")
-    print(f"Filtering for field: {FILTER_FIELD}")
+    print("Filtering for: eventType in ['data_leak', 'system_alert'] AND severity in ['critical', 'high']")
     print(f"Saving to bucket: {S3_BUCKET}")
     
     while True:
@@ -78,12 +81,12 @@ def main():
                 continue
             
 
-            if process_message(message):
-                # Delete message from queue if successfully processed
-                sqs_client.delete_message(
-                    QueueUrl=SQS_QUEUE_URL,
-                    ReceiptHandle=message['ReceiptHandle']
-                )
+            for message in messages:
+                if process_message(message):
+                    sqs_client.delete_message(
+                        QueueUrl=SQS_QUEUE_URL,
+                        ReceiptHandle=message['ReceiptHandle']
+                    )
                     
         except Exception as e:
             print(f"Error in main loop: {str(e)}")

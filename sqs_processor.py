@@ -18,7 +18,7 @@ S3_BUCKET = os.getenv('S3_BUCKET', 'umfg-cloud-logs-filtered')
 sqs_client = boto3.client('sqs', region_name=AWS_REGION)
 s3_client = boto3.client('s3', region_name=AWS_REGION)
 
-SUBFOLDER = 'version-profpedro'
+SUBFOLDER = 'version-1424-diego'
 
 def process_message(message):
     """
@@ -26,8 +26,11 @@ def process_message(message):
     """
     try:
         body = json.loads(message['Body'])
-        
-        if 'eventType' in body and body['eventType'] in ['error_occurred', 'file_upload']:
+
+        right_body_event_type = 'eventType' in body and body['eventType'] in ['data_leak', 'system_alert']
+        right_body_event_severity = 'metadata' in body and 'severity' in body['metadata'] and body['metadata']['severity'] in ['critical', 'high']
+
+        if right_body_event_type and right_body_event_severity:
             filtered_data = {
                 'eventType': 'log_filtered',
                 'timestamp': datetime.utcnow().isoformat(),
@@ -91,4 +94,4 @@ def main():
             continue
 
 if __name__ == "__main__":
-    main() 
+    main()

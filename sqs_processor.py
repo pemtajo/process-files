@@ -82,12 +82,10 @@ def main():
 
             if process_message(messages):
                 # Delete message from queue if successfully processed
-                #sqs_client.delete_message(
-                #    QueueUrl=SQS_QUEUE_URL,
-                #    ReceiptHandle=messages['ReceiptHandle']
-                #)
-                # Also, do not delete
-                    
+                sqs_client.delete_message(
+                    QueueUrl=SQS_QUEUE_URL,
+                    ReceiptHandle=message['ReceiptHandle']
+                )
         except Exception as e:
             print(f"Error in main loop: {str(e)}")
             continue

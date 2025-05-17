@@ -7,6 +7,8 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 # AWS Configuration
 AWS_REGION = os.getenv('AWS_REGION', 'us-east-1')
 SQS_QUEUE_URL = os.getenv('SQS_QUEUE_URL')
@@ -63,7 +65,8 @@ def main():
     """
     print(f"Starting to poll queue: {SQS_QUEUE_URL}")
     print(f"Saving to bucket: {S3_BUCKET}")
-    
+    print(f"Access key: {AWS_ACCESS_KEY_ID}")
+
     while True:
         try:
             # Receive messages from SQS
@@ -72,20 +75,20 @@ def main():
                 MaxNumberOfMessages=1,
                 WaitTimeSeconds=10
             )
+            message = response.get('Messages')
             
-            messages = response.get('Messages', [])
-            
-            if not messages:
+            if not message:
                 print("No messages received")
                 continue
             
 
-            if process_message(messages):
+            if process_message(message[0]):
                 # Delete message from queue if successfully processed
                 sqs_client.delete_message(
                     QueueUrl=SQS_QUEUE_URL,
                     ReceiptHandle=message['ReceiptHandle']
                 )
+            
         except Exception as e:
             print(f"Error in main loop: {str(e)}")
             continue
